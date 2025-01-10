@@ -1,4 +1,4 @@
-import { View, Text } from "react-native";
+import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Animated, { FadeInDown, FadeInRight } from "react-native-reanimated";
 import Button from "@/src/components/Button";
@@ -6,11 +6,15 @@ import ButtonOutline from "@/src/components/ButtonOutline";
 import Breaker from "@/src/components/Breaker";
 import { AntDesign } from "@expo/vector-icons";
 import { Image } from "expo-image";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
 
 const blurhash =
   "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
 
 const WelcomeScreen = () => {
+  const { navigate: navigateAuth }: NavigationProp<AuthNavigationType> =
+    useNavigation();
+
   return (
     <SafeAreaView className="flex-1 justify-between items-center bg-white">
       <View className="w-full px-4 items-center justify-center gap-8 h-full">
@@ -53,11 +57,17 @@ const WelcomeScreen = () => {
           <Animated.View
             entering={FadeInDown.duration(100).delay(300).springify()}
             className="pb-6">
-            <Button title="Login" />
+            <Button
+              title="Login"
+              action={() => navigateAuth("Login")}
+            />
           </Animated.View>
           <Animated.View
             entering={FadeInDown.duration(100).delay(400).springify()}>
-            <ButtonOutline title="Sign Up" />
+            <ButtonOutline
+              title="Sign Up"
+              action={() => navigateAuth("Register")}
+            />
           </Animated.View>
         </View>
 
