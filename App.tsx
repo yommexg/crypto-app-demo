@@ -1,15 +1,18 @@
+import { useEffect } from "react";
 import { View, Text } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import styled from "styled-components/native";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import "./styles/global.css";
 import RootNavigation from "./src/screens/navigation/RootNavigation";
 import useCachedResources from "./hooks/useCachedResources";
 import { useUserStore } from "./store/useUserStore";
-import { useEffect } from "react";
 
 const App = () => {
   const isLoadingComplete = useCachedResources();
+  const queryClient = new QueryClient();
+
   const { session, user } = useUserStore();
 
   useEffect(() => {
@@ -23,7 +26,9 @@ const App = () => {
   return (
     <Container>
       <StatusBar style="inverted" />
-      <RootNavigation />
+      <QueryClientProvider client={queryClient}>
+        <RootNavigation />
+      </QueryClientProvider>
     </Container>
   );
 };
