@@ -2,7 +2,11 @@ import useSupabaseAuth from "@/hooks/useSupabaseAuth";
 import Avatar from "@/src/components/Avatar";
 import { useUserStore } from "@/store/useUserStore";
 import { Ionicons } from "@expo/vector-icons";
-import { useFocusEffect } from "@react-navigation/native";
+import {
+  useFocusEffect,
+  useNavigation,
+  NavigationProp,
+} from "@react-navigation/native";
 import { useCallback, useState } from "react";
 import {
   View,
@@ -40,6 +44,8 @@ const HomeScreen = () => {
   const { session } = useUserStore();
   const { getUserProfile } = useSupabaseAuth();
 
+  const { navigate }: NavigationProp<ScreenNavigationType> = useNavigation();
+
   const { data: coinsData, isLoading: isAllCoinsLoading } = useQuery({
     queryKey: ["allCoins"],
     queryFn: FetchAllCoins,
@@ -73,7 +79,9 @@ const HomeScreen = () => {
   }
 
   const renderItem = ({ item, index }: { item: Coin; index: number }) => (
-    <TouchableOpacity className="flex-row w-full p-4 items-center">
+    <TouchableOpacity
+      className="flex-row w-full p-4 items-center"
+      onPress={() => navigate("CoinDetails", { coinUuid: item.uuid })}>
       <Animated.View
         entering={FadeInDown.duration(100)
           .delay(index * 200)

@@ -14,3 +14,7 @@ type TabNavigationType = {
 type SplashNavigationType = {
   Welcome: undefined;
 };
+
+type ScreenNavigationType = {
+  CoinDetails: { coinUuid: string };
+};
