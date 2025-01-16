@@ -183,7 +183,7 @@ const MarketScreen = () => {
 
         {/* Coins */}
         <ScrollView
-          contentContainerStyle={{ paddingBottom: 300 }}
+          contentContainerStyle={{ paddingBottom: 100 }}
           showsVerticalScrollIndicator={false}>
           {isAllCoinsLoading ? (
             <ActivityIndicator
