@@ -22,3 +22,6 @@ type ScreenNavigationType = {
 type SearchNavigationType = {
   SearchScreen: undefined;
 };
+type NewsNavigationType = {
+  NewsDetails: undefined;
+};

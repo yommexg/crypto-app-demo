@@ -1,5 +1,5 @@
 import { FetchCryptoNews } from "@/utils/cryptoapi";
-import { useNavigation } from "@react-navigation/native";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { useQuery } from "@tanstack/react-query";
 import {
   View,
@@ -22,13 +22,13 @@ const NewsScreen = () => {
     queryFn: FetchCryptoNews,
   });
 
-  const navigation = useNavigation();
+  const { navigate }: NavigationProp<NewsNavigationType> = useNavigation();
 
   const handleClick = (item: any) => {
-    navigation.navigate("NewsDetails", item);
+    navigate("NewsDetails", item);
   };
 
-  const renderItem = ({ item, index }: { item: any; index: string }) => {
+  const renderItem = ({ item, index }: { item: any; index: number }) => {
     return (
       <TouchableOpacity
         className="mb-4 mx-4 gap-1"
@@ -99,7 +99,7 @@ const NewsScreen = () => {
               data={newsData.data}
               showsVerticalScrollIndicator={false}
               keyExtractor={(item, index) => index.toString()}
-              renderItem={renderItem}
+              renderItem={({ item, index }) => renderItem({ item, index })}
             />
           ) : (
             <View>
