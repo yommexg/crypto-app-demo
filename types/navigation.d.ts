@@ -18,3 +18,7 @@ type SplashNavigationType = {
 type ScreenNavigationType = {
   CoinDetails: { coinUuid: string };
 };
+
+type SearchNavigationType = {
+  SearchScreen: undefined;
+};
