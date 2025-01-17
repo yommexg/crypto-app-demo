@@ -14,7 +14,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 interface AvatarProps {
   size: number;
   url: string | null;
-  onUpload: (filePath: string) => void;
+  onUpload?: (filePath: string) => void;
   showUpload?: boolean;
 }
 

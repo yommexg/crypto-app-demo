@@ -22,6 +22,11 @@ type ScreenNavigationType = {
 type SearchNavigationType = {
   SearchScreen: undefined;
 };
+
 type NewsNavigationType = {
   NewsDetails: undefined;
+};
+
+type ProfileNavigationType = {
+  EditProfileScreen: undefined;
 };
