@@ -1,7 +1,8 @@
+import { ReactNode } from "react";
 import { Text, TouchableOpacity } from "react-native";
 
 interface ButtonProps {
-  title: string;
+  title: string | ReactNode;
   action?: () => void;
 }
 

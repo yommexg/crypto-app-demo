@@ -7,17 +7,26 @@ import {
   useNavigation,
 } from "@react-navigation/native";
 import { useState, useCallback } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ActivityIndicator,
+  Alert,
+} from "react-native";
 import { ChevronLeftIcon } from "react-native-heroicons/outline";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Input } from "react-native-elements";
+import Button from "@/src/components/Button";
 
 const EditProfileScreen = () => {
   const [loading, setLoading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState("");
   const [username, setUsername] = useState("");
+  const [fullName, setFullName] = useState("");
 
   const { session } = useUserStore();
-  const { getUserProfile } = useSupabaseAuth();
+  const { getUserProfile, updateUserProfile } = useSupabaseAuth();
 
   const navigation = useNavigation();
   const { navigate }: NavigationProp<ProfileNavigationType> = useNavigation();
@@ -41,6 +50,7 @@ const EditProfileScreen = () => {
       if (data) {
         setUsername(data.username);
         setAvatarUrl(data.avatar_url);
+        setFullName(data?.full_name);
       }
     } catch (error) {
       console.log(error);
@@ -48,6 +58,25 @@ const EditProfileScreen = () => {
       setLoading(false);
     }
   }
+
+  async function handleUpdateProfile() {
+    try {
+      setLoading(true);
+
+      const { error } = await updateUserProfile(username, fullName, avatarUrl);
+      if (error) {
+        console.log(error);
+        Alert.alert(`Profile Update Failed ${error}`);
+      } else {
+        Alert.alert(`Profile Updated Successfully`);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <SafeAreaView className="flex-1 bg-white">
       <View>
@@ -68,19 +97,55 @@ const EditProfileScreen = () => {
           <View />
         </View>
 
+        {/* Avatar */}
         <View>
-          {/* Avatar */}
           <View className="justify-center items-center py-2">
             <View className="overflow-hidden border-2 border-[#2ab07c] rounded-3xl">
               <Avatar
                 size={100}
                 url={avatarUrl}
+                showUpload
+                onUpload={(url: string) => {
+                  setAvatarUrl(url);
+                }}
               />
             </View>
-            <View className="w-full py-3 items-center">
-              <Text className="text-lg font-bold text-white">{username}</Text>
-            </View>
           </View>
+        </View>
+
+        {/* User Details */}
+        <View className="px-4 pt-2">
+          <View>
+            <Input
+              label="email"
+              value={session?.user.email}
+              disabled
+            />
+          </View>
+
+          {/* UserName */}
+          <View className="gap-1">
+            <Input
+              label="Username"
+              value={username || ""}
+              onChangeText={(text) => setUsername(text)}
+            />
+          </View>
+
+          {/* FullName */}
+          <View className="gap-1">
+            <Input
+              label="Fullname"
+              value={fullName || ""}
+              onChangeText={(text) => setFullName(text)}
+            />
+          </View>
+
+          {/* Buttons */}
+          <Button
+            title={loading ? <ActivityIndicator color="white" /> : "Update"}
+            action={() => handleUpdateProfile()}
+          />
         </View>
       </View>
     </SafeAreaView>

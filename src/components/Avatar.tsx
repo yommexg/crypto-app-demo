@@ -69,7 +69,11 @@ const Avatar = ({ url, size = 150, onUpload, showUpload }: AvatarProps) => {
         <View
           className="justify-center items-center"
           style={[avatarSize, styles.avatar, styles.image]}>
-          <ActivityIndicator color="white" />
+          <Image
+            source={require("../../assets/images/avatar.jpg")}
+            style={[avatarSize, styles.avatar, styles.image]}
+            accessibilityLabel="Default Avatar"
+          />
         </View>
       )}
 

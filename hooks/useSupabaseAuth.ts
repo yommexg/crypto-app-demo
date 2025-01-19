@@ -20,6 +20,12 @@ export default function useSupabaseAuth() {
       email,
       password,
     });
+    if (!error) {
+      const newProfile = {
+        id: data?.user?.id,
+      };
+      await supabase.from("profiles").insert(newProfile);
+    }
 
     return {
       error,
@@ -42,7 +48,7 @@ export default function useSupabaseAuth() {
 
     const { data, error, status } = await supabase
       .from("profiles")
-      .select(`username, full_name, website, avatar_url`)
+      .select(`username, full_name, avatar_url`)
       .eq("id", session?.user.id)
       .single();
 
@@ -56,7 +62,6 @@ export default function useSupabaseAuth() {
   async function updateUserProfile(
     username: string,
     fullName: string,
-    website: string,
     avatarUrl: string
   ) {
     if (!session?.user) throw new Error("No user on the session!");
@@ -65,7 +70,6 @@ export default function useSupabaseAuth() {
       id: session?.user.id,
       username,
       full_name: fullName,
-      website,
       avatar_url: avatarUrl,
       updated_at: new Date(),
     };

@@ -30,12 +30,20 @@ const RegisterScreen = () => {
   async function signUpWithEmail() {
     setIsLoading(true);
     const {
-      data: { session },
+      data: { session, user },
       error,
     } = await supabase.auth.signUp({
       email,
       password,
     });
+
+    if (!error) {
+      const newProfile = {
+        id: user?.id.toString(),
+      };
+      const res = await supabase.from("profiles").insert(newProfile);
+      console.log(res);
+    }
 
     if (!session) {
       Alert.alert(
