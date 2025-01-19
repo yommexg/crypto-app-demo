@@ -60,6 +60,7 @@ const ProfileScreen = () => {
             <Avatar
               size={100}
               url={avatarUrl}
+              onUpload={() => ({})}
             />
           </View>
           <View className="w-full py-3 items-center">

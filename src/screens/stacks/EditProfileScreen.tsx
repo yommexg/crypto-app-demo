@@ -59,11 +59,17 @@ const EditProfileScreen = () => {
     }
   }
 
+  console.log(avatarUrl);
+
   async function handleUpdateProfile() {
     try {
       setLoading(true);
 
-      const { error } = await updateUserProfile(username, fullName, avatarUrl);
+      const { error } = await updateUserProfile({
+        avatarUrl,
+        fullName,
+        username,
+      });
       if (error) {
         console.log(error);
         Alert.alert(`Profile Update Failed ${error}`);

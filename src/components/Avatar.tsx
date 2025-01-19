@@ -10,17 +10,19 @@ import {
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { MaterialIcons } from "@expo/vector-icons";
+import useSupabaseAuth from "@/hooks/useSupabaseAuth";
 
 interface AvatarProps {
   size: number;
   url: string | null;
-  onUpload?: (filePath: string) => void;
+  onUpload: (filePath: string) => void;
   showUpload?: boolean;
 }
 
 const Avatar = ({ url, size = 150, onUpload, showUpload }: AvatarProps) => {
   const [uploading, setUploading] = useState(false);
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+
+  const { updateUserProfile } = useSupabaseAuth();
 
   const avatarSize = { height: size, width: size };
 
@@ -42,9 +44,6 @@ const Avatar = ({ url, size = 150, onUpload, showUpload }: AvatarProps) => {
       if (data) {
         const fr = new FileReader();
         fr.readAsDataURL(data);
-        fr.onload = () => {
-          setAvatarUrl(fr.result as string);
-        };
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -53,14 +52,71 @@ const Avatar = ({ url, size = 150, onUpload, showUpload }: AvatarProps) => {
     }
   }
 
-  async function uploadAvatar() {}
+  async function uploadAvatar() {
+    try {
+      setUploading(true);
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        allowsMultipleSelection: false, // Can only select one image
+        allowsEditing: true, // Allows the user to crop / rotate their photo before uploading it
+        quality: 1,
+        exif: false, // We don't want nor need that data.
+      });
+
+      if (result.canceled || !result.assets || result.assets.length === 0) {
+        console.log("User cancelled image picker.");
+        return;
+      }
+
+      const image = result.assets[0];
+
+      if (!image.uri) {
+        throw new Error("No image uri!");
+      }
+
+      const arraybuffer = await fetch(image.uri).then((res) =>
+        res.arrayBuffer()
+      );
+
+      const fileExt = image.uri?.split(".").pop()?.toLowerCase() ?? "jpeg";
+      const path = `${Date.now()}.${fileExt}`;
+      const { data, error: uploadError } = await supabase.storage
+        .from("avatars")
+        .upload(path, arraybuffer, {
+          contentType: image.mimeType ?? "image/jpeg",
+        });
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("avatars").getPublicUrl(path);
+
+      const { error } = await updateUserProfile({ avatarUrl: publicUrl });
+      if (error) {
+        console.log(error);
+      }
+
+      onUpload(data.path);
+    } catch (error) {
+      if (error instanceof Error) {
+        Alert.alert(error.message);
+      } else {
+        throw error;
+      }
+    } finally {
+      setUploading(false);
+    }
+  }
 
   return (
     <View>
-      {avatarUrl ? (
+      {url ? (
         <View className="relative">
           <Image
-            source={{ uri: avatarUrl }}
+            source={{ uri: url }}
             accessibilityLabel="Avatar"
             style={[avatarSize, styles.avatar, styles.image]}
           />
@@ -80,7 +136,7 @@ const Avatar = ({ url, size = 150, onUpload, showUpload }: AvatarProps) => {
       {showUpload && (
         <View className="absolute right-0 bottom-0">
           {!uploading ? (
-            <TouchableOpacity>
+            <TouchableOpacity onPress={uploadAvatar}>
               <MaterialIcons
                 name="cloud-upload"
                 size={30}

@@ -59,11 +59,15 @@ export default function useSupabaseAuth() {
     };
   }
 
-  async function updateUserProfile(
-    username: string,
-    fullName: string,
-    avatarUrl: string
-  ) {
+  async function updateUserProfile({
+    username,
+    fullName,
+    avatarUrl,
+  }: {
+    username?: string;
+    fullName?: string;
+    avatarUrl?: string;
+  }) {
     if (!session?.user) throw new Error("No user on the session!");
 
     const updates = {
